@@ -3,6 +3,7 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Home from "./app/Home";
 import Error from "./app/Error";
+import User from "./app/User";
 
 function App() {
   return (
@@ -11,6 +12,7 @@ function App() {
       <div className="flex-grow flex flex-col items-center justify-center">
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/user" element={<User />} />
           <Route path="*" element={<Error />} />
         </Routes>
       </div>

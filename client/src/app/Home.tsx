@@ -1,6 +1,8 @@
 import React, { useState } from "react";
-import { useLazyQuery, gql, ApolloError } from "@apollo/client";
+import { useLazyQuery, gql, ApolloError, useMutation } from "@apollo/client";
+import { useNavigate } from "react-router-dom";
 
+// GraphQL query to log in the user
 const LOGIN_USER = gql`
   query UserLogin($email: String!, $password: String!) {
     userLogin(email: $email, password: $password) {
@@ -13,54 +15,90 @@ const LOGIN_USER = gql`
   }
 `;
 
+// GraphQL mutation to register the user
+const REGISTER_USER = gql`
+  mutation Mutation(
+    $firstName: String!
+    $lastName: String!
+    $email: String!
+    $password: String!
+  ) {
+    createUser(
+      firstName: $firstName
+      lastName: $lastName
+      email: $email
+      password: $password
+    )
+  }
+`;
+
 const Home = () => {
+  // State variables for login and registration forms
   const [userEmail, setUserEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [userFirstName, setFirstName] = useState("");
-  const [userLastName, setLastFirstName] = useState("");
+  const [userFirstName, setUserFirstName] = useState("");
+  const [userLastName, setUserLastName] = useState("");
   const [haveAccount, setHaveAccount] = useState(true);
-  const [user, setUser] = useState(null); // State to hold user data
 
-  const [loginUser, { loading, error }] = useLazyQuery(LOGIN_USER, {
-    onCompleted: (data) => {
-      setUser(data.userLogin); // Store user data in state upon successful login
+  const navigate = useNavigate(); // Initialize useNavigate hook
 
-      console.log("Login successful:", data.userLogin);
-    },
-    onError: (err: ApolloError) => {
-      console.error("Error fetching login:", err.message);
-      console.error("GraphQL Error Details:", err.graphQLErrors);
-    },
-  });
+  // Lazy query for logging in the user
+  const [loginUser, { loading: loginLoading, error: loginError }] =
+    useLazyQuery(LOGIN_USER, {
+      onCompleted: (data) => {
+        navigate("/user", { state: { user: data.userLogin } }); // Navigate to /user with user data
+        console.log("Login successful:", data.userLogin);
+      },
+      onError: (err: ApolloError) => {
+        console.error("Error fetching login:", err.message);
+        console.error("GraphQL Error Details:", err.graphQLErrors);
+      },
+    });
 
+  // Mutation for registering the user
+  const [registering, { loading: registerLoadaing, error: registerError }] =
+    useMutation(REGISTER_USER, {
+      onCompleted: () => {
+        setHaveAccount(true); // Set haveAccount to true after successful registration to show login form
+        console.log("User registered successfully:");
+      },
+      onError: (err: ApolloError) => {
+        console.error("Error registering user:", err.message);
+        console.error("GraphQL Error Details:", err.graphQLErrors);
+      },
+    });
+
+  // Handler for login form submission
   const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log(
-      "Login attempt with email:",
-      userEmail,
-      "and password:",
-      password,
-    );
-
-    loginUser({ variables: { email: userEmail, password } });
-
+    loginUser({ variables: { email: userEmail, password } }); // Execute login query
     setUserEmail("");
     setPassword("");
   };
 
+  // Handler for registration form submission
   const handleRegistration = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
+    registering({
+      variables: {
+        firstName: userFirstName,
+        lastName: userLastName,
+        email: userEmail,
+        password,
+      },
+    }); // Execute registration mutation
+    setUserFirstName("");
+    setUserLastName("");
     setUserEmail("");
     setPassword("");
   };
 
   return (
     <div className="flex flex-col justify-center items-center">
+      {/* Conditional rendering of login or registration form based on haveAccount state */}
       {haveAccount ? (
         <div className="bg-gradient-to-r from-slate-500 to-slate-800 rounded-xl p-10 m-10">
           <p className="text-4xl font-bold">Please login to continue</p>
-
           <form
             className="mt-3.5 flex flex-col text-xl w-full"
             onSubmit={handleLogin}
@@ -101,8 +139,8 @@ const Home = () => {
         </div>
       ) : (
         <div className="bg-gradient-to-r from-slate-500 to-slate-800 rounded-xl p-10 m-10">
+          {/* Conditional rendering of login or registration form based on haveAccount state */}
           <p className="text-4xl font-bold">Please register to continue</p>
-
           <form
             className="mt-3.5 flex flex-col text-xl w-full"
             onSubmit={handleRegistration}
@@ -116,7 +154,7 @@ const Home = () => {
               className="p-2 m-2 border-2 border-gray-500 rounded-md"
               value={userFirstName}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                setFirstName(e.target.value)
+                setUserFirstName(e.target.value)
               }
               required
             />
@@ -129,7 +167,7 @@ const Home = () => {
               className="p-2 m-2 border-2 border-gray-500 rounded-md"
               value={userLastName}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                setLastFirstName(e.target.value)
+                setUserLastName(e.target.value)
               }
               required
             />
@@ -168,6 +206,8 @@ const Home = () => {
           </form>
         </div>
       )}
+
+      {/* Toggle between login and registration forms */}
       <div className="mb-5">
         {haveAccount ? (
           <p className="text-gray-300">
@@ -191,18 +231,11 @@ const Home = () => {
           </p>
         )}
       </div>
-      {loading && <p>Loading...</p>}
-      {error && <p>Error: {error.message}</p>}
-      {user && (
-        <div className="text-white">
-          {/* Display other user data */}
-          <p>
-            Welcome back, {user.firstName} {user.lastName}!
-          </p>
-          <p>Your email is: {user.email}</p>
-          <p>Your id is: {user.id}</p>
-        </div>
-      )}
+
+      {/* Loading and error messages */}
+      {(loginLoading || registerLoadaing) && <p>Loading...</p>}
+      {loginError && <p>Error: {loginError.message}</p>}
+      {registerError && <p>Error: {registerError.message}</p>}
     </div>
   );
 };
