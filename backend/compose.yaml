@@ -1,0 +1,17 @@
+version: '24.0.9'
+
+services:
+  postgres:
+    container_name: thread-app-databse
+    image: postgres
+    ports:
+      - 8500:5432
+    volumes:
+      - postgres_data:/var/lib/postgres/data
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: threads
+      POSTGRES_PASSWORD: threads
+
+volumes:
+  postgres_data:

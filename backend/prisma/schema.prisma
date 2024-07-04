@@ -1,0 +1,34 @@
+// Generator block specifies which client to use for database interactions
+generator client {
+    provider = "prisma-client-js" // Use Prisma Client JavaScript
+}
+
+// Datasource block specifies the database connection details
+datasource db {
+    provider = "postgresql" // Specify PostgreSQL as the database provider
+    url      = env("DATABASE_URL") // Database URL is fetched from environment variables
+}
+
+// Model definition for the User table
+model User {
+    id              String  @id @default(uuid()) // Primary key with a default value of a UUID
+    firstName       String  @map("first_name") // Maps the field to "first_name" in the database
+    lastName        String  @map("last_name") // Maps the field to "last_name" in the database
+    profileImageURL String? @map("profile_image_url") // Nullable field, mapped to "profile_image_url" in the database
+    email           String  @unique // Unique constraint on the email field
+    password        String // Stores the user's password
+    salt            String // Stores the salt used for hashing the password
+
+    note Note[] @relation("note")
+
+    // @@map maps the model to the "users" table in the database
+    @@map("users")
+}
+
+// One-to-many relationship between the User and Note models
+model Note {
+    noteId   String  @id @default(uuid())
+    note     String
+    author   User?   @relation("note", fields: [authorId], references: [id])
+    authorId String?
+}
