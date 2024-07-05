@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useLazyQuery, gql, ApolloError, useMutation } from "@apollo/client";
 import { useNavigate } from "react-router-dom";
 
@@ -139,7 +139,6 @@ const Home = () => {
         </div>
       ) : (
         <div className="bg-gradient-to-r from-slate-500 to-slate-800 rounded-xl p-10 m-10">
-          {/* Conditional rendering of login or registration form based on haveAccount state */}
           <p className="text-4xl font-bold">Please register to continue</p>
           <form
             className="mt-3.5 flex flex-col text-xl w-full"
@@ -234,8 +233,12 @@ const Home = () => {
 
       {/* Loading and error messages */}
       {(loginLoading || registerLoadaing) && <p>Loading...</p>}
-      {loginError && <p>Error: {loginError.message}</p>}
-      {registerError && <p>Error: {registerError.message}</p>}
+      {loginError && (
+        <p className="text-red-500">Error: {loginError.message}</p>
+      )}
+      {registerError && (
+        <p className="text-red-500">Error: {registerError.message}</p>
+      )}
     </div>
   );
 };
