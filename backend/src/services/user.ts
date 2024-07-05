@@ -11,6 +11,14 @@ export interface CreateUserPayload {
   password: string;
 }
 
+export interface UpdateUserPayload {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+  profileImageURL: string;
+}
+
 export interface GetUserPayload {
   email: string;
   password: string;
@@ -49,6 +57,35 @@ class UserService {
         salt, // Store salt in the database for password hashing
       },
     });
+  }
+  // Static method to Login a user
+  public static async updateUser(payload: UpdateUserPayload) {
+    const { firstName, lastName, email, password, profileImageURL } = payload;
+
+    const user = await UserService.getUserByEmail(email); // Retrieve user by email
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    const newPassword = !password
+      ? user.password
+      : UserService.generateHash(user.salt, password);
+
+    const updatedinfo = await prismaClient.user.update({
+      where: {
+        email,
+      },
+      data: {
+        firstName,
+        lastName,
+        password: newPassword,
+        profileImageURL,
+      },
+    });
+
+    // return the user
+    return updatedinfo;
   }
 
   // Static method to Login a user

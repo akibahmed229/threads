@@ -1,6 +1,7 @@
 import UserService, {
   CreateUserPayload,
   GetUserPayload,
+  UpdateUserPayload,
 } from "../services/user";
 
 const queries = {
@@ -38,6 +39,11 @@ const mutation = {
     const res = await UserService.createUser(payload);
 
     return res.id;
+  },
+  updateUser: async (_: any, payload: UpdateUserPayload) => {
+    const res = await UserService.updateUser(payload);
+
+    return res;
   },
 };
 

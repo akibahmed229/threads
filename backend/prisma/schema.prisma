@@ -27,8 +27,11 @@ model User {
 
 // One-to-many relationship between the User and Note models
 model Note {
-    noteId   String  @id @default(uuid())
-    note     String
-    author   User?   @relation("note", fields: [authorId], references: [id])
-    authorId String?
+    noteId    String   @id @default(uuid())
+    title     String
+    note      String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt // Automatically updates the field when the record is updated
+    author    User?    @relation("note", fields: [authorId], references: [id]) // Author field is a foreign key to the User model
+    authorId  String?
 }

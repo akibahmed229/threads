@@ -4,6 +4,10 @@ import cors from "cors";
 import bodyParser from "body-parser";
 import { createApolloServer } from "./graphql";
 import UserService from "./services/user";
+import dotenv from "dotenv";
+
+// Load environment variables from .env file
+dotenv.config();
 
 // This async function initializes the Express application and Apollo Server
 const init = async () => {
