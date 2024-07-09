@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 // user-defined imports
 import { Note, User } from "../type/default";
-import { ApolloError, useLazyQuery, useMutation } from "@apollo/client";
+import { ApolloError, useLazyQuery } from "@apollo/client";
 import { GET_USER_NOTES } from "../graphsql/UserQuery";
 import NoteForm from "./notes/NoteForm";
 import NoteShowAll from "./notes/NoteShowAll";

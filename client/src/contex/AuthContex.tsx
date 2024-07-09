@@ -1,4 +1,4 @@
-import React, {
+import {
   createContext, // To create a context for authentication state
   useState, // To manage state in the AuthProvider component
   useContext, // To use the authentication context in other components

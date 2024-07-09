@@ -5,7 +5,7 @@ const NoteShowAll = ({
   setHoveredNoteId,
   hoveredNoteId,
 }: {
-  notes: Note;
+  notes: Note[];
   hoveredNoteId: string | null;
   setHoveredNoteId: (noteId: string | null) => void;
 }) => {
@@ -13,7 +13,7 @@ const NoteShowAll = ({
     <>
       <div className="w-full">
         {/* Add mapping over user notes here when available */}
-        {notes.map((note) => {
+        {notes.map((note: Note) => {
           return (
             <div
               className="hover:shadow-lg"

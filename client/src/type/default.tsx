@@ -9,11 +9,9 @@ export interface User {
 }
 
 export interface Note {
-  note: {
-    noteId: string;
-    note: string;
-    title: string;
-    createdAt: string;
-    updatedAt: string;
-  };
+  noteId: string;
+  note: string;
+  title: string;
+  createdAt: string;
+  updatedAt: string;
 }

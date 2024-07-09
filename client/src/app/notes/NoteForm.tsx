@@ -1,4 +1,4 @@
-import { useMutation } from "@apollo/client";
+import { ApolloError, useMutation } from "@apollo/client";
 import { CREATE_NOTE } from "../../graphsql/UserMutation";
 import { useState } from "react";
 
