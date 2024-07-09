@@ -1,39 +1,13 @@
 import { useState } from "react";
-import { gql, ApolloError, useMutation } from "@apollo/client";
+import { ApolloError, useMutation } from "@apollo/client";
 
-const EDIT_PROFILE = gql`
-  mutation Mutation(
-    $email: String!
-    $lastName: String
-    $firstName: String
-    $profileImageURL: String
-  ) {
-    updateUser(
-      email: $email
-      lastName: $lastName
-      firstName: $firstName
-      profileImageURL: $profileImageURL
-    ) {
-      id
-      email
-      firstName
-      lastName
-      profileImageURL
-    }
-  }
-`;
+// user-defined imports
+import { EDIT_PROFILE } from "../graphsql/UserMutation";
+import { User } from "../type/default";
 
-const UserProfile = ({
-  user,
-}: {
-  user: {
-    id: string;
-    email: string;
-    firstName: string;
-    lastName: string;
-    profileImageURL: string;
-  };
-}) => {
+import DefaultImage from "../assets/blank-avatar-photo-place-holder-600nw-1095249842.webp";
+
+const UserProfile = ({ user }: User) => {
   const [editProfile, setEditProfile] = useState(false); // State to toggle between viewing and editing profile
 
   // Edit Profile section
@@ -75,19 +49,26 @@ const UserProfile = ({
   };
 
   return (
-    <div className="flex flex-col items-center justify-center p-4 w-[20vw] shadow-lg">
+    <div className="flex flex-col items-center justify-center p-4 h-screen w-[20vw]">
       <div className="flex flex-col items-start w-full mt-7">
+        {user.profileImageURL ? (
+          <img
+            src={user.profileImageURL}
+            alt="Profile"
+            className="rounded-full w-32 h-32 mb-4 border-2 border-gray-300"
+          />
+        ) : (
+          <img
+            src={DefaultImage}
+            alt="Profile"
+            className="rounded-full w-32 h-32 mb-4 border-2 border-gray-300"
+          />
+        )}
+
         <h1 className="text-4xl font-bold mb-4">{user.firstName}'s Profile</h1>
         <p className="text-xl mb-2">First Name: {user.firstName}</p>
         <p className="text-xl mb-2">Last Name: {user.lastName}</p>
         <p className="text-xl mb-2">Email: {user.email}</p>
-        {user.profileImageURL && (
-          <img
-            src={user.profileImageURL}
-            alt="Profile"
-            className="rounded-full w-32 h-32 mt-4 border-2 border-gray-300"
-          />
-        )}
         <button
           className="bg-blue-500 text-white hover:bg-blue-600 p-2 rounded-md mt-4"
           onClick={() => setEditProfile(!editProfile)}

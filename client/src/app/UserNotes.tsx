@@ -1,30 +1,55 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-const UserNotes = ({
-  user,
-}: {
-  user: {
-    id: string;
-    email: string;
-    firstName: string;
-    lastName: string;
-    profileImageURL: string;
-  };
-}) => {
+// user-defined imports
+import { Note, User } from "../type/default";
+import { ApolloError, useLazyQuery, useMutation } from "@apollo/client";
+import { GET_USER_NOTES } from "../graphsql/UserQuery";
+import NoteForm from "./notes/NoteForm";
+import NoteShowAll from "./notes/NoteShowAll";
+
+const UserNotes = ({ user }: User) => {
   const [noteToggle, setNoteToggle] = useState(false); // State to toggle between viewing and adding notes
+  const [notes, setNotes] = useState<Note[]>([]); // State to store user notes
+  const [hoveredNoteId, setHoveredNoteId] = useState<string | null>(null); // State to track hovered note ID
+
+  const [userNotes, { loading: notesLoading, error: noteError }] = useLazyQuery(
+    GET_USER_NOTES,
+    {
+      onCompleted: (data) => {
+        setNotes(data.getUserNotes);
+      },
+      onError: (err: ApolloError) => {
+        console.error("Error registering user:", err.message);
+        console.error("GraphQL Error Details:", err.graphQLErrors);
+      },
+    },
+  );
+
+  const handleGetUserNotes = () => {
+    userNotes({ variables: { authorId: user.id } });
+    setNoteToggle(false);
+  };
+
+  useEffect(() => {
+    userNotes({ variables: { authorId: user.id } });
+  }, [userNotes, user.id]);
 
   return (
-    <div className="flex flex-col justify-center w-[70vw] p-4 h-screen bg-gray-600 shadow-lg">
-      <div className="flex flex-col items-center min-h-screen mt-20">
+    <div className="flex flex-col flex-grow justify-center w-[70vw] p-4 min-h-screen bg-gray-600 shadow-lg">
+      <div className="flex flex-col flex-grow items-center min-h-screen mt-10">
         <div className="flex justify-around w-full">
           <h1
-            className={`text-4xl mb-4 cursor-pointer ${noteToggle ? "" : "border-b-4 border-blue-500 font-bold"}`}
-            onClick={() => setNoteToggle(false)}
+            className={`text-4xl mb-4 cursor-pointer ${
+              noteToggle ? "" : "border-b-4 border-blue-500 font-bold"
+            }`}
+            onClick={handleGetUserNotes}
           >
             {user.firstName}'s Notes
           </h1>
           <h1
-            className={`text-4xl mb-4 cursor-pointer ${noteToggle ? "border-b-4 border-blue-500 font-bold" : ""}`}
+            className={`text-4xl mb-4 cursor-pointer ${
+              noteToggle ? "border-b-4 border-blue-500 font-bold" : ""
+            }`}
             onClick={() => setNoteToggle(true)}
           >
             Add a Note
@@ -33,26 +58,13 @@ const UserNotes = ({
 
         {/* Conditional Rendering based on noteToggle state */}
         {noteToggle ? (
-          <form className="flex flex-col w-full p-10">
-            <input
-              type="text"
-              placeholder="Title"
-              className="p-2 m-2 border-2 border-gray-300 rounded-md"
-            />
-            <textarea
-              placeholder="Note"
-              className="p-2 m-2 border-2 border-gray-300 rounded-md"
-            />
-            <button className="bg-blue-500 text-white px-4 py-2 rounded-md mt-4 hover:bg-blue-600 transition self-end">
-              Save Note
-            </button>
-          </form>
+          <NoteForm authorId={user.id} />
         ) : (
-          <div className="w-full">
-            <p className="text-xl mb-4">No notes available</p>
-            {/* Placeholder for user notes */}
-            {/* Add mapping over user notes here when available */}
-          </div>
+          <NoteShowAll
+            notes={notes}
+            setHoveredNoteId={setHoveredNoteId}
+            hoveredNoteId={hoveredNoteId}
+          />
         )}
       </div>
     </div>

@@ -2,9 +2,11 @@ import express from "express";
 import { expressMiddleware } from "@apollo/server/express4";
 import cors from "cors";
 import bodyParser from "body-parser";
-import { createApolloServer } from "./graphql";
-import UserService from "./services/user";
 import dotenv from "dotenv";
+
+// import the user module
+import UserService from "./services/user";
+import { createApolloServer } from "./graphql";
 
 // Load environment variables from .env file
 dotenv.config();

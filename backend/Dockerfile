@@ -1,12 +1,11 @@
 FROM node:20-alpine
-FROM prisma/prisma:latest
 
 WORKDIR /app
 
 COPY package*.json ./
 
-RUN yarn install
-RUN prisma generate
+RUN npm install
+RUN  npx prisma generate
 
 COPY . .
 

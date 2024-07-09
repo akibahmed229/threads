@@ -19,7 +19,8 @@ model User {
     password        String // Stores the user's password
     salt            String // Stores the salt used for hashing the password
 
-    note Note[] @relation("note")
+    notes Note[] @relation("note") // One-to-many relationship with the Note model
+    role  Role   @default(USER) // Default role is USER
 
     // @@map maps the model to the "users" table in the database
     @@map("users")
@@ -34,4 +35,9 @@ model Note {
     updatedAt DateTime @updatedAt // Automatically updates the field when the record is updated
     author    User?    @relation("note", fields: [authorId], references: [id]) // Author field is a foreign key to the User model
     authorId  String?
+}
+
+enum Role {
+    USER
+    ADMIN
 }

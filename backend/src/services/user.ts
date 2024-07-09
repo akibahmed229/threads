@@ -142,6 +142,9 @@ class UserService {
         email: user.email,
       },
       JWT_SECRET,
+      {
+        expiresIn: "1m",
+      },
     );
 
     return token; // Return JWT token

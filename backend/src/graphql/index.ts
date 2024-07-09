@@ -1,5 +1,20 @@
 import { ApolloServer, BaseContext } from "@apollo/server";
+import { GraphQLScalarType, Kind } from "graphql";
+
+// Import the user module
 import { user } from "../user";
+
+// Define the DateTime scalar
+const dateScalar = new GraphQLScalarType({
+  name: "DateTime",
+  description: "A date and time, represented as an ISO-8601 string",
+  serialize(value: any) {
+    // Convert outgoing Date to DateString
+    return value instanceof Date
+      ? `${value.toDateString()} ${value.toLocaleTimeString()}`
+      : null;
+  },
+});
 
 export const createApolloServer = async () => {
   // Define the schema
@@ -16,6 +31,7 @@ export const createApolloServer = async () => {
   `;
   // Define the resolvers for the schema
   const resolvers = {
+    DateTime: dateScalar,
     Query: {
       ...user.resolvers.queries,
     },
@@ -23,6 +39,7 @@ export const createApolloServer = async () => {
       ...user.resolvers.mutation,
     },
   };
+
   // create graphql server
   const server = new ApolloServer<BaseContext>({
     typeDefs, // schema
