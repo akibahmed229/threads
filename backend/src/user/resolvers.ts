@@ -3,7 +3,10 @@ import UserService, {
   GetUserPayload,
   UpdateUserPayload,
 } from "../services/user";
-import NotesService, { CreateNotePayload } from "../services/notes";
+import NotesService, {
+  CreateNotePayload,
+  UpdateNotePayload,
+} from "../services/notes";
 
 const queries = {
   // User service
@@ -18,7 +21,6 @@ const queries = {
 
     return token;
   },
-
   getCurrentLoggedInUser: async (_: any, parametrs: any, context: any) => {
     if (!context && !context.user) {
       throw new Error("User not found");
@@ -28,7 +30,6 @@ const queries = {
 
     return user;
   },
-
   userLogin: async (_: any, payload: GetUserPayload) => {
     const user = await UserService.userLogin(payload);
 
@@ -45,20 +46,32 @@ const queries = {
 };
 
 const mutation = {
+  // User service
   createUser: async (_: any, payload: CreateUserPayload) => {
     const res = await UserService.createUser(payload);
 
     return res.id;
   },
-
   updateUser: async (_: any, payload: UpdateUserPayload) => {
     const res = await UserService.updateUser(payload);
 
     return res;
   },
 
+  // Note service
   createNote: async (_: any, payload: CreateNotePayload) => {
     const res = await NotesService.createNote(payload);
+
+    return res;
+  },
+  deleteNote: async (_: any, payload: { noteId: string }) => {
+    const { noteId } = payload;
+    const res = await NotesService.deleteNoteById(noteId);
+
+    return res;
+  },
+  updateNote: async (_: any, payload: UpdateNotePayload) => {
+    const res = await NotesService.updateNote(payload);
 
     return res;
   },

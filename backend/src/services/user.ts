@@ -77,10 +77,10 @@ class UserService {
         email,
       },
       data: {
-        firstName,
-        lastName,
-        password: newPassword,
-        profileImageURL,
+        firstName: firstName || user.firstName,
+        lastName: lastName || user.lastName,
+        password: newPassword || user.password,
+        profileImageURL: profileImageURL || user.profileImageURL,
       },
     });
 

@@ -49,3 +49,23 @@ export const CREATE_NOTE = gql`
     }
   }
 `;
+
+// GraphQL mutation to delete a note by ID
+export const DELETE_NOTE = gql`
+  mutation DeleteNote($noteId: String!) {
+    deleteNote(noteId: $noteId)
+  }
+`;
+
+// GraphQL mutation to update a note by ID
+export const UPDATE_NOTE = gql`
+  mutation UpdateNote($noteId: String!, $title: String, $note: String) {
+    updateNote(noteId: $noteId, title: $title, note: $note) {
+      noteId
+      title
+      note
+      createdAt
+      updatedAt
+    }
+  }
+`;

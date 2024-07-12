@@ -3,4 +3,6 @@ export const mutation = `#graphql
     updateUser(firstName: String, lastName: String, email: String!, password: String, profileImageURL: String): User
     
     createNote(title: String!, note: String!, authorId: String!): Note
+    deleteNote(noteId: String!): Boolean
+    updateNote(noteId: String!, title: String, note: String): Note
 `;

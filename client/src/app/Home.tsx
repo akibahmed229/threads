@@ -48,7 +48,9 @@ const Home = () => {
   // Handler for login form submission
   const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    loginUser({ variables: { email: userEmail, password } }); // Execute login query
+    loginUser({
+      variables: { email: userEmail, password },
+    }); // Execute login query
     setUserEmail("");
     setPassword("");
   };

@@ -26,12 +26,20 @@ const UserNotes = ({ user }: User) => {
   );
 
   const handleGetUserNotes = () => {
-    userNotes({ variables: { authorId: user.id } });
+    userNotes({
+      variables: {
+        authorId: user.id,
+      },
+    });
     setNoteToggle(false);
   };
 
   useEffect(() => {
-    userNotes({ variables: { authorId: user.id } });
+    userNotes({
+      variables: {
+        authorId: user.id,
+      },
+    });
   }, [userNotes, user.id]);
 
   return (

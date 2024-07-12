@@ -25,17 +25,20 @@ const NoteForm = ({ authorId }: { authorId: string }) => {
 
   return (
     <>
-      <form className="flex flex-col w-full p-10" onSubmit={handleUserNoteFrom}>
+      <form
+        className="flex flex-col w-full p-10 space-y-4"
+        onSubmit={handleUserNoteFrom}
+      >
         <input
           type="text"
           placeholder="Title"
-          className="p-2 m-2 border-2 border-gray-300 rounded-md w-full"
+          className="p-2 border rounded-md"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
         />
         <textarea
           placeholder="Note"
-          className="p-2 m-2 border-2 border-gray-300 rounded-md mn-4 h-40 w-full resize-none"
+          className="p-2 border rounded-md min-h-40 resize-x"
           value={note}
           onChange={(e) => setNote(e.target.value)}
         />

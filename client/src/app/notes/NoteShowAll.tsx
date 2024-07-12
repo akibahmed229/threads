@@ -1,4 +1,7 @@
+import { useState } from "react";
+import { useMutation } from "@apollo/client";
 import { Note } from "../../type/default";
+import { DELETE_NOTE, UPDATE_NOTE } from "../../graphsql/UserMutation";
 
 const NoteShowAll = ({
   notes,
@@ -9,10 +12,57 @@ const NoteShowAll = ({
   hoveredNoteId: string | null;
   setHoveredNoteId: (noteId: string | null) => void;
 }) => {
+  const [deleteNote] = useMutation(DELETE_NOTE, {
+    onCompleted: () => {},
+    onError: (err) => {
+      console.error("Error deleting note:", err.message);
+      console.error("GraphQL Error Details:", err.graphQLErrors);
+    },
+  });
+
+  const [updateNote] = useMutation(UPDATE_NOTE, {
+    onCompleted: () => {},
+    onError: (err) => {
+      console.error("Error updating note:", err.message);
+      console.error("GraphQL Error Details:", err.graphQLErrors);
+    },
+  });
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingNote, setEditingNote] = useState<Note | null>(null);
+  const [title, setTitle] = useState("");
+  const [noteContent, setNoteContent] = useState("");
+
+  const handleNoteDeletion = (noteId: string) => {
+    deleteNote({
+      variables: {
+        noteId,
+      },
+    });
+  };
+
+  const handleEditClick = (note: Note) => {
+    setEditingNote(note);
+    setTitle(note.title);
+    setNoteContent(note.note);
+    setIsModalOpen(true);
+  };
+
+  const handleNoteUpdate = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    updateNote({
+      variables: {
+        noteId: editingNote?.noteId,
+        title,
+        note: noteContent,
+      },
+    });
+    setIsModalOpen(false);
+  };
+
   return (
     <>
       <div className="w-full">
-        {/* Add mapping over user notes here when available */}
         {notes.map((note: Note) => {
           return (
             <div
@@ -43,11 +93,17 @@ const NoteShowAll = ({
                       : "scale-75 opacity-0"
                   }`}
                 >
-                  <button className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition">
+                  <button
+                    className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition"
+                    onClick={() => handleNoteDeletion(note.noteId)}
+                  >
                     Delete
                   </button>
 
-                  <button className="bg-blue-500 text-white px-4 py-2 rounded-md ml-4 hover:bg-blue-600 transition">
+                  <button
+                    className="bg-blue-500 text-white px-4 py-2 rounded-md ml-4 hover:bg-blue-600 transition"
+                    onClick={() => handleEditClick(note)}
+                  >
                     Edit Note
                   </button>
                 </div>
@@ -56,6 +112,53 @@ const NoteShowAll = ({
           );
         })}
       </div>
+
+      {isModalOpen && (
+        <div
+          className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 h-screen w-screen"
+          onClick={() => setIsModalOpen(false)}
+        >
+          <div
+            className="bg-gray-500 p-6 rounded-lg shadow-lg w-1/2 h-1/2"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2 className="text-2xl font-bold mb-4">Edit Note</h2>
+            <form
+              onSubmit={handleNoteUpdate}
+              className="flex flex-col space-y-4"
+            >
+              <input
+                type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="Title"
+                className="p-2 border rounded-md"
+              />
+              <textarea
+                value={noteContent}
+                onChange={(e) => setNoteContent(e.target.value)}
+                placeholder="Note"
+                className="p-2 border rounded-md h-40 resize-none"
+              />
+              <div className="flex justify-end space-x-4">
+                <button
+                  type="button"
+                  className="bg-gray-700 text-white px-4 py-2 rounded-md hover:bg-gray-800 transition"
+                  onClick={() => setIsModalOpen(false)}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition"
+                >
+                  Save
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </>
   );
 };
