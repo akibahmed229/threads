@@ -1,51 +1,37 @@
-version: '24.0.9'
+version: '3'
 
 services:
-  web:
-    depends_on:
-      - api
-    build: ./client
-    ports:
-      - 5173:5173
-    develop:
-      watch:
-        - path: ./client/package.json
-          action: rebuild
-        - path: ./client/package-lock.json
-          action: rebuild
-        - path: ./client
-          target: /app
-          action: sync
-
-  api:
-    depends_on:
-      - db
-    build: ./backend
-    ports:
-      - 5000:5000
-    environment:
-      DATABASE_URL: postgresql://postgres:threads@localhost:8500/threads?schema=public
-    develop:
-      watch:
-        - path: ./backend/package.json
-          action: rebuild
-        - path: ./backend/package-lock.json
-          action: rebuild
-        - path: ./backend
-          target: /app
-          action: sync
-
   db:
-    container_name: thread-app-databse
+    container_name: thread-app-database
     image: postgres
     ports:
-      - 8500:5432
+      - 8500:5432 # Maps host port 8500 to container port 5432
     volumes:
-      - postgres_data:/var/lib/postgres/data
+      - postgres_data:/var/lib/postgresql/data
     environment:
       POSTGRES_USER: postgres
       POSTGRES_DB: threads
-      POSTGRES_PASSWORD: threads
+      POSTGRES_PASSWORD: 123456
+      DATABASE_URL: postgres://postgres:123456@db:5432/threads
+    networks:
+      - psql-pgql
+
+  api:
+    container_name: thread-app-backend
+    depends_on:
+      - db
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - 5000:5000
+    environment:
+      DATABASE_URL: postgres://postgres:123456@db:5432/threads
+    networks:
+      - psql-pgql
 
 volumes:
   postgres_data:
+
+networks:
+  psql-pgql:

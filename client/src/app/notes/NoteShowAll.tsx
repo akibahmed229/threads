@@ -156,6 +156,14 @@ const NoteShowAll = ({
                 </button>
               </div>
             </form>
+            <div className="flex justify-between mt-4">
+              <p>
+                <strong>Created At:</strong> {editingNote?.createdAt}
+              </p>
+              <p>
+                <strong>Updated At:</strong> {editingNote?.updatedAt}
+              </p>
+            </div>
           </div>
         </div>
       )}
